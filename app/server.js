@@ -110,12 +110,14 @@ app.get('/api/map-data', async (req, res) => {
             return {
                 name: item['學校名稱'] || "未填寫名稱",
                 addr: item['學校地址'] || "無地址",
-                province: item['省份'] || "省份",
+                province: item['省份'] || "",
+                prov: item['區、縣'] || "",
+                else: item['其他'] || "",
                 lat: parseFloat(item.lat || item['緯度']), 
                 lng: parseFloat(item.lng || item['經度']),
                 experience: item['請問您在那裏都經歷了什麼？'],
-                HMaster: item['校長名字'],
-                scandal: item['學校的醜聞'] || "無詳細資訊",
+                HMaster: item['校長名字'] || "",
+                scandal: item['學校的醜聞'] || "",
                 contact: item['學校的聯繫方式'] || ""
             };
         });
