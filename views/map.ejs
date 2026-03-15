@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>地圖展示</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        #map { height: 80vh; width: 100%; border-radius: 8px; }
+        .custom-popup b { color: #e63946; }
+    </style>
+</head>
+<body>
+    <h1>實體地圖分佈</h1>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const map = L.map('map').setView([36.06, 120.38], 6); // 預設視角
+
+        // 選用簡潔的底圖風格
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+        fetch('/api/map-data')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(item => {
+                    const marker = L.marker([item.lat, item.lng]).addTo(map);
+
+                    // 1. 鼠標指到圖標：顯示標題 (Tooltip)
+                    marker.bindTooltip(`<strong>${item.name}</strong>`, { 
+                        sticky: true, 
+                        direction: 'top' 
+                    });
+
+                    // 2. 點擊：顯示所有詳細資訊 (Popup)
+                    const popupContent = `
+                        <div class="custom-popup">
+                            <b>${item.name}</b><br>
+                            <small>${item.prov} ${item.city}</small><hr>
+                            <p>${item.scandal}</p>
+                            <address>${item.addr}</address>
+                        </div>
+                    `;
+                    marker.bindPopup(popupContent);
+                });
+            });
+    </script>
+</body>
+</html>
