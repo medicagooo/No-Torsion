@@ -1,8 +1,10 @@
 const express = require('express');
 const path = require('path');
 const axios = require('axios');
+const cors = require('cors');
 require('dotenv').config();
 const app = express();
+app.use(cors());
 
 // 設置 EJS
 app.set('views', path.join(__dirname, '../views'));
