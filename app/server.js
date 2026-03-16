@@ -114,8 +114,15 @@ const params = new URLSearchParams();
 
 
 
+let cachedData = null;
+let lastFetchTime = 0;
 
 app.get('/api/map-data', async (req, res) => {
+    const now = Date.now();
+    // 如果快取存在且未超過 5 分鐘 (300,000 ms)，直接回傳
+    if (cachedData && (now - lastFetchTime < 300000)) {
+        return res.json(cachedData);
+    }
     try {
         const googleAppsScriptUrl = process.env.GOOGLE_SCRIPT_URL;
         const response = await axios.get(googleAppsScriptUrl);
@@ -154,10 +161,15 @@ app.get('/api/map-data', async (req, res) => {
             };
         });
 
+        cachedData = cleanData; // 存入快取
+        lastFetchTime = now;
         res.json(cleanData);
     } catch (error) {
         console.error("API Error:", error.message);
-        res.status(500).json({ error: error.message });
+        if (cachedData) {
+            return res.json(cachedData);
+        }
+        res.status(500).json({ error: "無法取得地圖數據", message: error.message });
     }
 });
 

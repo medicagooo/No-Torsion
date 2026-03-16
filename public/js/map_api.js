@@ -23,7 +23,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 }).addTo(map);
 
 
-const apiUrl = 'https://no-torsion.vercel.app/api/map-data'
+const apiUrl = '/api/map-data'
 
 
 let provList = Array.from({ length: 40 }, () => Array(2).fill());
