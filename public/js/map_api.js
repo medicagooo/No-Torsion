@@ -65,7 +65,15 @@ fetch(apiUrl)
             .map(item => `<strong>${item.province}</strong>: ${item.count}`)
             .join(', ');
         document.getElementById('province-dist').innerHTML = statistics;
-        document.getElementById('lastSynced').innerText = Date.now - jsonResponse.last_synced;
+
+        const lastSyncedTime = jsonResponse.last_synced;
+        function timeUpdate() {
+            const elapsed = Math.floor((Date.now() - lastSyncedTime) / 1000);
+            let updButton = (elapsed > 300000) ? '，<button onclick="window.location.reload();">刷新</button>' : ''
+            document.getElementById('lastSynced').innerText = elapsed + ` 秒前${updButton}`;
+        }
+        setInterval(timeUpdate, 1000);
+        
         document.getElementById('avgAge').innerText = jsonResponse.avg_age;
     
         document.getElementById('total-count').innerText = data.length;
