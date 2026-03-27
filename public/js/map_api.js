@@ -1,18 +1,18 @@
 function getColor(d) {
-    return d > 1000 ? '#800026' :
-           d > 500  ? '#BD0026' :
-           d > 200  ? '#E31A1C' :
-           d > 100  ? '#FC4E2A' :
-           d > 50   ? '#FD8D3C' :
-           d > 20   ? '#FEB24C' :
-           d > 10   ? '#FED976' :
+    return d > 200 ? '#800026' :
+           d > 100  ? '#BD0026' :
+           d > 70  ? '#E31A1C' :
+           d > 50  ? '#FC4E2A' :
+           d > 20   ? '#FD8D3C' :
+           d > 10   ? '#FEB24C' :
+           d > 5   ? '#FED976' :
                       '#FFEDA0';
 }
 
 
-const categories = []; // 存放省份名
-const selfData = [];   // 存放本人填写数
-const agentData = [];  // 存放代理人填写数
+//const categories = []; // 存放省份名
+//const selfData = [];   // 存放本人填写数
+//const agentData = [];  // 存放代理人填写数
 
 const map = L.map('map').setView([37.5, 109], 4); // 預設視角
 const CNprov = '/cn.json'
@@ -62,19 +62,34 @@ fetch(apiUrl)
             .catch(err => console.error('加载地图数据失败:', err));
 
         const statistics = jsonResponse.statistics
-            .map(item => `<strong>${item.province}</strong>: ${item.count}`)
-            .join(', ');
-        document.getElementById('province-dist').innerHTML = statistics;
+        new Chart(document.getElementById('prov'), {
+            type: 'pie',
+            data: {
+                labels: statistics.map(item => item.province),
+                datasets:[{
+                    data: statistics.map(item => item.count),
+                    backgroundColor: [
+                        '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff',
+                        '#ff9f40', '#4ed5b0', '#f44336', '#8bc34a', '#2196f3',
+                        '#e91e63', '#00bcd4', '#cddc39', '#ff5722', '#795548',
+                        '#607d8b', '#8bc34a', '#b39ddb', '#ffab91', '#d1c4e9',
+                        '#fff59d', '#ffe0b2', '#b2dfdb', '#cfd8dc', '#ffccbc',
+                        '#f8bbd0', '#e1bee7', '#d1c4e9', '#c8e6c9', '#ffecb3',
+                        '#fff9c4', '#f0f4c3', '#d7ccc8', '#f5f5f5', '#eeeeee'
+                    ]
+                }]
+            }
+        })
 
         const lastSyncedTime = jsonResponse.last_synced;
         function timeUpdate() {
             const elapsed = Math.floor((Date.now() - lastSyncedTime) / 1000);
             let updButton = (elapsed > 300000) ? '，<button onclick="window.location.reload();">刷新</button>' : ''
-            document.getElementById('lastSynced').innerHTML = elapsed + ` 秒前${updButton}`;
+            document.getElementById('lastSynced').innerHTML = `<b>${elapsed}</b> 秒前${updButton}`;
         }
         setInterval(timeUpdate, 1000);
         
-        document.getElementById('avgAge').innerText = jsonResponse.avg_age.toFixed(2);
+        document.getElementById('avgAge').innerHTML = `${jsonResponse.avg_age.toFixed(2)}岁`;
     
 
         let count_num0 = 0;
@@ -85,14 +100,16 @@ fetch(apiUrl)
             if(item.inputType == '受害者的代理人')count_num1++;
             if(!item.inputType)count_num2++;
         })
-        document.getElementById('total-count').innerHTML = 
-        `<br>
-        <text><b>数据量</b>${data.length}</text><br>
-        <text><b>总提交量</b>${count_num0+count_num1}</text><br>
-        <text><b>本人提交量</b>${count_num0}</text><br>
-        <text><b>代理提交量</b>${count_num1}</text><br>
-        <text><b>批量导入数据</b>${count_num2}</text>
-        `;
+        new Chart(document.getElementById('updatedForm'), {
+        type: 'pie',
+            data: {
+                labels: ['受害者本人', '受害者的代理人', '批量数据'],
+                datasets: [{
+                    data: [count_num0, count_num1, count_num2],
+                    backgroundColor: ['#ff6384','#36a2eb','#ffce56']
+                }]
+            }
+        });
         
         
         const queryString = window.location.search;

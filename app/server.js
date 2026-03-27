@@ -204,6 +204,6 @@ module.exports = app;
 // 本地開發監聽（Vercel 部署時會自動忽略這部分，但在本地測試很有用）
 const app_port = 3000;
 app.listen(app_port, () => {
-    if (debugMod == true) console.warn(`警告！你現在在調試模式`,debugMod)
+    if (debugMod == "true") console.warn(`警告！你現在在調試模式`,debugMod, "api获取位置：", apiUrl)
     console.log(`Server is running at http://localhost:${app_port}`);
 });

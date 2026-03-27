@@ -1,23 +1,21 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
-<div class="form-group" style="display: flex;
-flex-direction: column;
-    align-items: center;">
-    <input type="text" name="school_name" id="school_input" placeholder="检索" required>
+<div class="form-group" style="display: flex; flex-direction: column; align-items: center;">
+    <input type="text" name="school_name" id="school_input" placeholder="检索" onkeydown="if(event.key==='Enter') queryUpd('search',this.value)" required>
     <div id="results_list"></div>
+    <button onclick="queryUpd('search',document.getElementById('school_input').value)">检索</button>
 </div>
 
 
-<div id="data-container" style="
-display: flex;
-flex-direction: column;
-    align-items: center;"></div>
+<div id="data-container" style="display: flex; flex-direction: column;align-items: center;"></div>
 
 <script>
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    
+
+    const urlParams = new URLSearchParams(window.location.search);
     const inputType = urlParams.get('inputType')
+    const inputSearch = urlParams.get('search')
     
     async function loadData() {
         try {
@@ -32,7 +30,7 @@ flex-direction: column;
             rawData.forEach(item => {
                 if(item.inputType != inputType && inputType) {
                     if(inputType == "批量数据" && item.inputType) return;
-                    else if(inputType !="批量数据") return
+                    else if(inputType !="批量数据") return;
                 }
 
                 const card = document.createElement('details');

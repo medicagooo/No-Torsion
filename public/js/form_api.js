@@ -12,13 +12,13 @@ schoolInput.addEventListener('input', function() {
     }
     // 延迟 300ms 发送请求
     debounceTimer = setTimeout(() => {
-        fetch(window.API_URL) // 假设这里返回了所有数据
+        fetch(window.API_URL)
             .then(res => res.json())
             .then(JsonData => {
                 const data = JsonData.data;
                 const keyword = schoolInput.value.trim().toLowerCase();
                 
-                // 【核心逻辑】：只保留包含关键字的结果
+                //只保留包含关键字的结果
                 const filteredData = data.filter(item => 
                     item.name.toLowerCase().includes(keyword) || (item.addr && item.addr.toLowerCase().includes(keyword))
                 );
