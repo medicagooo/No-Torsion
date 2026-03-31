@@ -98,7 +98,7 @@ function createPageRoutes({ apiUrl, areaOptions, formRules, title }) {
       html: rawHtml
     };
     
-    res.render('blogs', { reports: [report], t: req.t, title:`${title_B}|${title}`});
+    res.render('blogs', { apiUrl, reports: [report], t: req.t, title:`${title_B}|${title}`});
   });
 
   return router;

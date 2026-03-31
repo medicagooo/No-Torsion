@@ -1,7 +1,21 @@
-<% reports.forEach(report => { %>
-    <main class="main">
-        <div class="DivStyle-Glass port" id="markdown">
-            <%- report.html %>
-        </div>
-    </main>
-<% }) %>
+<%- include('partials/head') %>
+<html>
+<body>
+    <div>
+        <p><a href="/">返回首页</a></p>
+        <p><a href="/blog">所有文章</a></p>
+    </div>
+
+    <div class="div" style="width: 70%;">
+        <% reports.forEach(report => { %>
+        <main class="main">
+                <div class="port" id="markdown">
+                    <%- report.html %>
+                </div>
+            </main>
+        <% }) %>
+    </div>
+    <%- include('partials/foot') %>
+</body>
+</html>
+
