@@ -4,13 +4,20 @@
       "name": "HosinoNeko",
       "url": "https://hosinoneko.me/",
       "avatar": "https://avatars.githubusercontent.com/u/177436503?v=4",
-      "desc": "一隻可愛的小藥娘的網站",
+      "desc": "站长、策划+执行和社群建立",
       "color": "#3388bb"
+    },
+    {
+      "name": "楠沐雪",
+      "url": "https://x.com/medicagoo",
+      "desc": "一个不被喜欢的跨女",
+      "avatar": "https://medicago.top/avatar/avatar.webp",
+      "color":"#3388bb"
     },
     {
       "name": "牧鸢",
       "url": "https://x.com/LwrDHYyuxR22499",
-      "desc": "一名独立调查人",
+      "desc": "社群传播、资料提供",
       "avatar": "https://pbs.twimg.com/profile_images/2033978135059062784/y7sj8Gmi_400x400.jpg",
       "color": "#3388bb"
     },
@@ -18,13 +25,7 @@
       "name": "amber",
       "url": "https://x.com/amber_toffee",
       "avatar": "https://pbs.twimg.com/profile_images/2018048535690723328/rYaERCPg_400x400.jpg",
-      "color":"#3388bb"
-    },
-    {
-      "name": "楠沐雪",
-      "url": "https://x.com/medicagoo",
-      "desc": "一个不被喜欢的跨女",
-      "avatar": "https://medicago.top/avatar/avatar.webp",
+      "desc": "社群建立",
       "color":"#3388bb"
     }
   ]

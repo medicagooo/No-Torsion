@@ -183,7 +183,7 @@ const messages = {
       allArticles: '所有文章'
     },
     index: {
-      tagline: '每一份真实的声音，都是终结扭转与伤害的力量。',
+      tagline: '凡真心所向，皆成回响；足以在偏见的荒原，震碎扭曲的枷锁',
       fillForm: '参与填表',
       viewMap: '查看扭转机构综合地图',
       blogLibrary: '文库'
@@ -334,25 +334,9 @@ const messages = {
     about: {
       title: '关于我们',
       friendLinks: '友情链接',
-      ownership: '本项目隶属于 TRANS UNION 团队，拥有其所有知识产权。',
-      origin: '本网站建站于 2026 年 2 月 21 日，由 HosinoNeko 站长在逃到上海不久后建立，而规划和设想早在站长仍被困于扭转机构时便已出现。',
-      thanks: '在这里衷心感谢以下项目、企业和个人为本项目提供了免费的援助，没有他们就没有这个网站的诞生：',
-      friendDescriptions: {
-        hosinoneko: '一只可爱的小药娘的网站',
-        muyuan: '一名独立调查人',
-        amber: ''
-      },
-      supporters: {
-        hosino: '网站开发',
-        muyuan: '社群传播',
-        leaflet: '地图',
-        amber: '社群建立',
-        nanmuxue: '网站开发',
-        google: '表单与 Apps Script',
-        github: '平台',
-        vercel: '网站服务',
-        nodejs: '框架'
-      }
+      ownership: '本项目由 TRANS UNION 维护、开发，透过Apachi-2.0 License开源。',
+      origin: '本网站建站于 2026 年 2 月 21 日，由 HosinoNeko 站长在逃到上海后建立。',
+      thanks: '在这里衷心感谢以下项目、企业和个人为本项目提供了免费的援助，没有他们就没有这个网站的诞生：'
     },
     submitSuccess: {
       title: '提交成功！感谢你的参与。',
@@ -460,7 +444,7 @@ const messages = {
       allArticles: '所有文章'
     },
     index: {
-      tagline: '每一份真實的聲音，都是終結扭轉與傷害的力量。',
+      tagline: '凡真心所向，皆成迴響；足以在偏見的荒原，震碎扭曲的枷鎖',
       fillForm: '參與填表',
       viewMap: '查看扭轉機構綜合地圖',
       blogLibrary: '文庫'
@@ -611,25 +595,9 @@ const messages = {
     about: {
       title: '關於我們',
       friendLinks: '友情鏈接',
-      ownership: '本項目隸屬於 TRANS UNION 團隊，擁有其所有知識產權。',
-      origin: '本網站建站於 2026 年 2 月 21 日，由 HosinoNeko 站長在逃到上海不久後建立，而規劃和設想早在站長仍被困於扭轉機構時便已出現。',
-      thanks: '在這裡衷心感謝以下項目、企業和個人為本項目提供了免費的援助，沒有他們就沒有這個網站的誕生：',
-      friendDescriptions: {
-        hosinoneko: '一隻可愛的小藥娘的網站',
-        muyuan: '一名獨立調查人',
-        amber: ''
-      },
-      supporters: {
-        hosino: '網站開發',
-        muyuan: '社群傳播',
-        leaflet: '地圖',
-        amber: '社群建立',
-        nanmuxue: '網站開發',
-        google: '表單與 Apps Script',
-        github: '平臺',
-        vercel: '網站服務',
-        nodejs: '框架'
-      }
+      ownership: '本項目由 TRANS UNION 維護與開發 ，透過Apachi-2.0 License開源',
+      origin: '本網站建站於 2026 年 2 月 21 日，由 HosinoNeko 站長在逃到上海後建立。',
+      thanks: '在這裡衷心感謝以下項目、企業和個人為本項目提供了免費的援助，沒有他們就沒有這個網站的誕生：'
     },
     submitSuccess: {
       title: '提交成功！感謝您的參與。',
@@ -737,7 +705,7 @@ const messages = {
       allArticles: 'All Articles'
     },
     index: {
-      tagline: 'Every truthful voice helps bring conversion practices and abuse to an end.',
+      tagline: 'Every sincere voice finds its resonance, enough to rend the warped fetters within the wilderness of bigotry.',
       fillForm: 'Fill Out the Form',
       viewMap: 'View the Conversion Institution Map',
       blogLibrary: 'Library'
@@ -889,24 +857,8 @@ const messages = {
       title: 'About Us',
       friendLinks: 'Friends & Links',
       ownership: 'This project belongs to the TRANS UNION team, which holds all related intellectual property rights.',
-      origin: 'This website went online on February 21, 2026. HosinoNeko created it shortly after reaching Shanghai, but the broader plan was conceived much earlier while still trapped inside a conversion institution.',
-      thanks: 'We sincerely thank the following projects, organizations, and individuals for helping make this website possible:',
-      friendDescriptions: {
-        hosinoneko: 'The personal site of a very cute trans girl',
-        muyuan: 'An independent investigator',
-        amber: ''
-      },
-      supporters: {
-        hosino: 'Website development',
-        muyuan: 'Community outreach',
-        leaflet: 'Mapping',
-        amber: 'Community building',
-        nanmuxue: 'Website development',
-        google: 'Forms and Apps Script',
-        github: 'Platform',
-        vercel: 'Hosting',
-        nodejs: 'Framework'
-      }
+      origin: 'This website went online on February 21, 2026. HosinoNeko created it shortly after reaching Shanghai.',
+      thanks: 'We sincerely thank the following projects, organizations, and individuals for helping make this website possible:'
     },
     submitSuccess: {
       title: 'Submission received. Thank you.',
