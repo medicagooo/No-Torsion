@@ -333,7 +333,7 @@ const messages = {
     },
     about: {
       title: '关于我们',
-      friendLinks: '友情链接',
+      friendLinks: '致谢',
       ownership: '本项目由 TRANS UNION 维护、开发，透过Apachi-2.0 License开源。',
       origin: '本网站建站于 2026 年 2 月 21 日，由 HosinoNeko 站长在逃到上海后建立。',
       thanks: '在这里衷心感谢以下项目、企业和个人为本项目提供了免费的援助，没有他们就没有这个网站的诞生：'
@@ -594,7 +594,7 @@ const messages = {
     },
     about: {
       title: '關於我們',
-      friendLinks: '友情鏈接',
+      friendLinks: '致謝',
       ownership: '本項目由 TRANS UNION 維護與開發 ，透過Apachi-2.0 License開源',
       origin: '本網站建站於 2026 年 2 月 21 日，由 HosinoNeko 站長在逃到上海後建立。',
       thanks: '在這裡衷心感謝以下項目、企業和個人為本項目提供了免費的援助，沒有他們就沒有這個網站的誕生：'
@@ -855,7 +855,7 @@ const messages = {
     },
     about: {
       title: 'About Us',
-      friendLinks: 'Friends & Links',
+      friendLinks: 'THANKS',
       ownership: 'This project belongs to the TRANS UNION team, which holds all related intellectual property rights.',
       origin: 'This website went online on February 21, 2026. HosinoNeko created it shortly after reaching Shanghai.',
       thanks: 'We sincerely thank the following projects, organizations, and individuals for helping make this website possible:'
