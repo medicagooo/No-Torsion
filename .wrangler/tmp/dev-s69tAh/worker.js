@@ -25596,6 +25596,23 @@ var require_appConfig = __commonJS({
       return "";
     }
     __name(readTrimmedEnvValue, "readTrimmedEnvValue");
+    function parseBooleanEnv(value, fallback) {
+      if (typeof value !== "string") {
+        return fallback;
+      }
+      const normalizedValue = value.trim().toLowerCase();
+      if (!normalizedValue) {
+        return fallback;
+      }
+      if (normalizedValue === "true" || normalizedValue === "1" || normalizedValue === "yes" || normalizedValue === "on") {
+        return true;
+      }
+      if (normalizedValue === "false" || normalizedValue === "0" || normalizedValue === "no" || normalizedValue === "off") {
+        return false;
+      }
+      return fallback;
+    }
+    __name(parseBooleanEnv, "parseBooleanEnv");
     function resolveFormProtectionSecret({ explicitSecret, formId: formId2, siteUrl: siteUrl2, title: title2 }) {
       if (typeof explicitSecret === "string" && explicitSecret.trim()) {
         return explicitSecret.trim();
@@ -25603,18 +25620,18 @@ var require_appConfig = __commonJS({
       return crypto.createHash("sha256").update([formId2, siteUrl2, title2 || "N\xB7C\xB7T"].join(":")).digest("hex");
     }
     __name(resolveFormProtectionSecret, "resolveFormProtectionSecret");
-    var debugMod = process.env.DEBUG_MOD || "false";
-    var title = process.env.TITLE;
-    var formDryRun = process.env.FORM_DRY_RUN === "true";
+    var debugMod = process.env.DEBUG_MOD || "true";
+    var title = process.env.TITLE || "N\xB7C\xB7T";
+    var formDryRun = parseBooleanEnv(process.env.FORM_DRY_RUN, true);
     var submitRateLimitMax = parsePositiveInteger(process.env.SUBMIT_RATE_LIMIT_MAX, 5);
     var formId = process.env.FORM_ID || "1FAIpQLScggjQgYutXQrjQDrutyxL0eLaFMktTMRKsFWPffQGavUFspA";
     var googleFormUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`;
     var googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
     var appPort = parsePositiveInteger(process.env.PORT, 3e3);
     var publicMapDataUrl = process.env.PUBLIC_MAP_DATA_URL || "https://nct.hosinoneko.me/api/map-data";
-    var siteUrl = String(process.env.SITE_URL || "https://nct.hosinoneko.me").replace(/\/+$/, "");
+    var siteUrl = String(process.env.SITE_URL || "https://www.victimsunion.org/").replace(/\/+$/, "");
     var apiUrl = "/api/map-data";
-    var trustProxy = resolveTrustProxy(process.env.TRUST_PROXY || (process.env.VERCEL ? "1" : "false"));
+    var trustProxy = resolveTrustProxy(process.env.TRUST_PROXY || (process.env.VERCEL ? "1" : "true"));
     var formProtectionMinFillMs = parsePositiveInteger(process.env.FORM_PROTECTION_MIN_FILL_MS, 3e3);
     var formProtectionMaxAgeMs = parsePositiveInteger(process.env.FORM_PROTECTION_MAX_AGE_MS, 24 * 60 * 60 * 1e3);
     var formProtectionSecretConfigured = Boolean(process.env.FORM_PROTECTION_SECRET && process.env.FORM_PROTECTION_SECRET.trim());

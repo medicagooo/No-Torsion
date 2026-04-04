@@ -111,10 +111,10 @@ npm test
 
 | 變數 | 是否必填 | 默認值 | 用途 / 備註 |
 | --- | --- | --- | --- |
-| `TITLE` | 非必要 | 空 | 站點標題；建議填 `N·C·T` |
-| `DEBUG_MOD` | 非必要 | `false` | 是否開啓調試頁；本地可設 `true` |
-| `FORM_DRY_RUN` | 非必要 | `false` | 是否只預覽提交、不真正送出 |
-| `SITE_URL` | 必要 | `https://nct.hosinoneko.me` | 站點正式網址，用於 `sitemap.xml`、`robots.txt` 等 |
+| `TITLE` | 非必要 | `N·C·T` | 站點標題 |
+| `DEBUG_MOD` | 非必要 | `true` | 是否開啓調試頁 |
+| `FORM_DRY_RUN` | 非必要 | `true` | 是否只預覽提交、不真正送出 |
+| `SITE_URL` | 非必要 | `https://www.victimsunion.org/` | 站點正式網址，用於 `sitemap.xml`、`robots.txt` 等 |
 | `PORT` | 非必要 | `3000` | 本地 Node 啓動端口 |
 | `SUBMIT_RATE_LIMIT_MAX` | 非必要 | `5` | 15 分鐘內單 IP 最多提交次數 |
 | `FORM_PROTECTION_SECRET` | 非必要 | 自動派生 | 未配置時會根據 `FORM_ID`、`SITE_URL` 和 `TITLE` 派生一個值；正式環境建議顯式設置 |
@@ -125,7 +125,7 @@ npm test
 | `PUBLIC_MAP_DATA_URL` | 非必要 | `https://nct.hosinoneko.me/api/map-data` | 公開地圖 API 地址 |
 | `GOOGLE_CLOUD_TRANSLATION_API_KEY` | 按需 | 空 | Google Cloud Translation API Key；啓用翻譯功能時必填 |
 | `TRANSLATION_PROVIDER_TIMEOUT_MS` | 非必要 | `10000` | 翻譯請求超時，單位毫秒 |
-| `TRUST_PROXY` | 非必要 | `false` | 是否信任反向代理；Workers / 代理環境建議設為 `1` 或 `true` |
+| `TRUST_PROXY` | 非必要 | `true` | 是否信任反向代理；Workers / 代理環境建議設為 `1` 或 `true` |
 | `RATE_LIMIT_REDIS_URL` | 非必要 | 空 | 共享限流存儲；留空時退回單實例記憶體限流 |
 
 ### 翻譯服務配置

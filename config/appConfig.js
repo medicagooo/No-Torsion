@@ -42,6 +42,28 @@ function readTrimmedEnvValue(...values) {
   return '';
 }
 
+function parseBooleanEnv(value, fallback) {
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const normalizedValue = value.trim().toLowerCase();
+
+  if (!normalizedValue) {
+    return fallback;
+  }
+
+  if (normalizedValue === 'true' || normalizedValue === '1' || normalizedValue === 'yes' || normalizedValue === 'on') {
+    return true;
+  }
+
+  if (normalizedValue === 'false' || normalizedValue === '0' || normalizedValue === 'no' || normalizedValue === 'off') {
+    return false;
+  }
+
+  return fallback;
+}
+
 function resolveFormProtectionSecret({ explicitSecret, formId, siteUrl, title }) {
   if (typeof explicitSecret === 'string' && explicitSecret.trim()) {
     return explicitSecret.trim();
@@ -54,18 +76,18 @@ function resolveFormProtectionSecret({ explicitSecret, formId, siteUrl, title })
 }
 
 // 所有运行时环境变量统一从这里读，避免业务代码四处直接碰 process.env。
-const debugMod = process.env.DEBUG_MOD || 'false';
-const title = process.env.TITLE;
-const formDryRun = process.env.FORM_DRY_RUN === 'true';
+const debugMod = process.env.DEBUG_MOD || 'true';
+const title = process.env.TITLE || 'N·C·T';
+const formDryRun = parseBooleanEnv(process.env.FORM_DRY_RUN, true);
 const submitRateLimitMax = parsePositiveInteger(process.env.SUBMIT_RATE_LIMIT_MAX, 5);
 const formId = process.env.FORM_ID || '1FAIpQLScggjQgYutXQrjQDrutyxL0eLaFMktTMRKsFWPffQGavUFspA';
 const googleFormUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`;
 const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
 const appPort = parsePositiveInteger(process.env.PORT, 3000);
 const publicMapDataUrl = process.env.PUBLIC_MAP_DATA_URL || 'https://nct.hosinoneko.me/api/map-data';
-const siteUrl = String(process.env.SITE_URL || 'https://nct.hosinoneko.me').replace(/\/+$/, '');
+const siteUrl = String(process.env.SITE_URL || 'https://www.victimsunion.org/').replace(/\/+$/, '');
 const apiUrl = '/api/map-data';
-const trustProxy = resolveTrustProxy(process.env.TRUST_PROXY || (process.env.VERCEL ? '1' : 'false'));
+const trustProxy = resolveTrustProxy(process.env.TRUST_PROXY || (process.env.VERCEL ? '1' : 'true'));
 const formProtectionMinFillMs = parsePositiveInteger(process.env.FORM_PROTECTION_MIN_FILL_MS, 3000);
 const formProtectionMaxAgeMs = parsePositiveInteger(process.env.FORM_PROTECTION_MAX_AGE_MS, 24 * 60 * 60 * 1000);
 const formProtectionSecretConfigured = Boolean(process.env.FORM_PROTECTION_SECRET && process.env.FORM_PROTECTION_SECRET.trim());
