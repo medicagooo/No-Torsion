@@ -488,6 +488,7 @@ window.getSharedMapData()
         document.getElementById('avgAge').textContent = formatMessage(i18n.map.stats.ageValue, {
             age: jsonResponse.avg_age.toFixed(2)
         });
+        document.getElementById('schoolNum').textContent = jsonResponse.schoolNum;
     
 
         let count_num0 = 0;
