@@ -237,6 +237,24 @@ test('form page includes school name and address autocomplete hooks', async () =
   assert.match(response.body, /\/js\/map_data_store\.js/);
 });
 
+test('area options API localizes city options for the current language', async () => {
+  const restoreFetch = installTranslationFetchStub();
+
+  try {
+    const app = loadApp({ DEBUG_MOD: 'false' });
+    const response = await requestPath(app, '/api/area-options?provinceCode=110000&lang=en');
+    const payload = JSON.parse(response.body);
+
+    assert.equal(response.statusCode, 200);
+    assert.ok(Array.isArray(payload.options));
+    assert.equal(payload.options[0].code, '110101');
+    assert.match(payload.options[0].name, /^EN:/);
+  } finally {
+    restoreFetch();
+    clearProjectModules();
+  }
+});
+
 test('sitemap.xml lists static pages and blog articles', async () => {
   const app = loadApp({
     DEBUG_MOD: 'false',
@@ -284,24 +302,17 @@ test('debug page renders when debug mode is enabled', async () => {
   const response = await requestPath(app, '/debug');
 
   assert.equal(response.statusCode, 200);
-  assert.match(response.body, /Debug/);
+  assert.match(response.body, /调试|Debug/);
 });
 
-test('about page translates friend descriptions with google translation in english mode', async () => {
-  const restoreFetch = installTranslationFetchStub();
+test('about page renders localized friend descriptions in english mode', async () => {
+  const app = loadApp({ DEBUG_MOD: 'false' });
+  const response = await requestPath(app, '/aboutus?lang=en');
 
-  try {
-    const app = loadApp({ DEBUG_MOD: 'false' });
-    const response = await requestPath(app, '/aboutus?lang=en');
-
-    assert.equal(response.statusCode, 200);
-    assert.match(response.body, /EN:站长、策划\+执行和社群建立/);
-    assert.match(response.body, /EN:社群传播、资料提供/);
-    assert.match(response.body, /EN:社群建立/);
-  } finally {
-    restoreFetch();
-    clearProjectModules();
-  }
+  assert.equal(response.statusCode, 200);
+  assert.match(response.body, /Founder, planning\/execution, and community building/);
+  assert.match(response.body, /Community outreach and source material support/);
+  assert.match(response.body, /Domain contributor/);
 });
 
 test('privacy page documents the language cookie and footer exposes the link', async () => {
@@ -424,6 +435,9 @@ test('blog list shows translated titles when english language is selected', asyn
     assert.ok(response.body.includes(originalTitle));
     assert.ok(response.body.includes(translatedTitle));
     assert.ok(response.body.indexOf(originalTitle) < response.body.indexOf(translatedTitle));
+    assert.ok(response.body.includes('Traditional Chinese'));
+    assert.ok(response.body.includes('March 13, 2026'));
+    assert.ok(response.body.includes('#Law'));
   } finally {
     restoreFetch();
     clearProjectModules();
@@ -459,6 +473,15 @@ test('map data service preserves valid upstream sync timestamps', () => {
   assert.equal(resolveLastSyncedTimestamp('1774925078387', 123), 1774925078387);
   assert.equal(resolveLastSyncedTimestamp(undefined, 123), 123);
   assert.equal(resolveLastSyncedTimestamp('-1', 123), 123);
+});
+
+test('map data service normalizes simplified and traditional province names to one canonical label', () => {
+  clearProjectModules();
+  const { normalizeProvinceNameToLegacy } = require(path.join(projectRoot, 'app/services/mapDataService'));
+
+  assert.equal(normalizeProvinceNameToLegacy('重庆'), '重慶');
+  assert.equal(normalizeProvinceNameToLegacy('重慶'), '重慶');
+  assert.equal(normalizeProvinceNameToLegacy('广东'), '廣東');
 });
 
 test('map timer renders elapsed seconds and adds refresh control after the refresh interval', () => {
@@ -739,6 +762,52 @@ test('map data service can bypass in-memory cache on force refresh', async () =>
   }
 
   assert.equal(fetchCount, 2);
+});
+
+test('map data service merges province statistics that differ only by script', async () => {
+  clearProjectModules();
+  const mapDataService = require(path.join(projectRoot, 'app/services/mapDataService'));
+  const originalFetch = global.fetch;
+
+  mapDataService.resetMapDataCache();
+  global.fetch = async () => ({
+    ok: true,
+    async json() {
+      return {
+        avg_age: 18,
+        last_synced: 1000,
+        SchoolNum: 133,
+        formNum: 4,
+        statistics: [
+          { province: '重庆', count: 120 },
+          { province: '重慶', count: 2 }
+        ],
+        statisticsForm: [
+          { province: '重庆', count: 1 },
+          { province: '重慶', count: 3 }
+        ],
+        data: [
+          { province: '重庆', lat: 29.5, lng: 106.5 },
+          { province: '重慶', lat: 29.6, lng: 106.6 }
+        ]
+      };
+    }
+  });
+
+  try {
+    const result = await mapDataService.getMapData({ publicMapDataUrl: 'https://example.com/api/map-data' });
+
+    assert.deepEqual(result.statistics, [
+      { province: '重慶', count: 122 }
+    ]);
+    assert.deepEqual(result.statisticsForm, [
+      { province: '重慶', count: 4 }
+    ]);
+    assert.deepEqual(result.data.map((item) => item.province), ['重慶', '重慶']);
+  } finally {
+    global.fetch = originalFetch;
+    mapDataService.resetMapDataCache();
+  }
 });
 
 test('public map API keeps CORS enabled while translate API stays same-origin only', async () => {

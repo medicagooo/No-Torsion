@@ -51,7 +51,7 @@ const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
 const appPort = parsePositiveInteger(process.env.PORT, 3000);
 const publicMapDataUrl = process.env.PUBLIC_MAP_DATA_URL || 'https://nct.hosinoneko.me/api/map-data';
 const siteUrl = String(process.env.SITE_URL || 'https://nct.hosinoneko.me').replace(/\/+$/, '');
-const apiUrl = debugMod === 'true' || !googleScriptUrl ? publicMapDataUrl : '/api/map-data';
+const apiUrl = '/api/map-data';
 const trustProxy = resolveTrustProxy(process.env.TRUST_PROXY || (process.env.VERCEL ? '1' : 'false'));
 const formProtectionMinFillMs = parsePositiveInteger(process.env.FORM_PROTECTION_MIN_FILL_MS, 3000);
 const formProtectionMaxAgeMs = parsePositiveInteger(process.env.FORM_PROTECTION_MAX_AGE_MS, 24 * 60 * 60 * 1000);

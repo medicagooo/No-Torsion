@@ -29,12 +29,12 @@
                         </div>
                         <div class="blog-list-card__meta">
                             <p><%= t('blog.author') %><%= Prot.author %></p>
-                            <p><%= t('blog.creationDate') %><%= Prot.CreationDate %></p>
-                            <p><%= t('blog.language') %><%= Prot.Language %></p>
+                            <p><%= t('blog.creationDate') %><%= Prot.localizedCreationDate || Prot.CreationDate %></p>
+                            <p><%= t('blog.language') %><%= Prot.localizedLanguage || Prot.Language %></p>
                             <p class="blog-list-card__tags">
                                 <% if (Prot.tagid && Prot.tagid.length > 0) { %>
                                     <% Prot.tagid.forEach(id => { %>
-                                        <span class="tag-label">#<%= AllTags[id] %></span>
+                                        <span class="tag-label">#<%= AllTags[id] || id %></span>
                                     <% }) %>
                                 <% } else { %>
                                     <span class="tag-label"><%= t('blog.noTag') %></span>
