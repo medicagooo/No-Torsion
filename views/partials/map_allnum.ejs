@@ -34,13 +34,19 @@
         </div>
     </div>
 
-    <div class="div map-stat-card map-stat-card--compact"><!--平均年齡-->
-        <strong class="map-stat-card__title"><%= t('map.stats.averageAge') %></strong>
-        <span id="avgAge" class="map-stat-card__value map-stat-card__value--age"><%= t('common.loading') %></span>
-    </div>
-    
-    <div class="div map-stat-card map-stat-card--compact"><!--學校總量-->
-        <strong class="map-stat-card__title"><%= t('map.stats.schoolNum') %></strong>
-        <span id="schoolNum" class="map-stat-card__value map-stat-card__value--age"><%= t('common.loading') %></span>
+    <div class="map-stat-card-stack">
+        <div class="div map-stat-card map-stat-card--chart map-stat-card--province map-stat-card--province-half"><!--平均年齡-->
+            <strong class="map-stat-card__title"><%= t('map.stats.averageAge') %></strong>
+            <div class="map-stat-card__chart">
+                <span id="avgAge" class="map-stat-card__value map-stat-card__value--age"><%= t('common.loading') %></span>
+            </div>
+        </div>
+
+        <div class="div map-stat-card map-stat-card--chart map-stat-card--province map-stat-card--province-half"><!--學校總量-->
+            <strong class="map-stat-card__title"><%= t('map.stats.schoolNum') %></strong>
+            <div class="map-stat-card__chart">
+                <span id="schoolNum" class="map-stat-card__value map-stat-card__value--age"><%= t('common.loading') %></span>
+            </div>
+        </div>
     </div>
 </section>

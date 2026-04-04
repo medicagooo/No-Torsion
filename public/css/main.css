@@ -28,6 +28,28 @@
     --details-summary: #2563eb;
     --code-bg: #111111;
     --code-text: #f5f5f5;
+    --map-stat-chart-bg-start: rgba(255, 255, 255, 0.58);
+    --map-stat-chart-bg-end: rgba(233, 242, 252, 0.42);
+    --map-stat-chart-border: rgba(143, 171, 201, 0.22);
+    --map-stat-chart-inset: rgba(255, 255, 255, 0.42);
+    --map-stat-chart-shadow: rgba(82, 100, 130, 0.12);
+    --map-stat-half-chart-bg-start: rgba(255, 255, 255, 0.38);
+    --map-stat-half-chart-bg-end: rgba(227, 238, 251, 0.26);
+    --map-stat-half-chart-border: rgba(130, 162, 194, 0.2);
+    --map-stat-half-chart-inset: rgba(255, 255, 255, 0.36);
+    --map-stat-half-chart-shadow: rgba(82, 100, 130, 0.12);
+    --map-stat-half-chart-overlay-start: rgba(255, 255, 255, 0.28);
+    --map-stat-half-chart-overlay-end: rgba(203, 222, 244, 0.16);
+    --map-page-chart-bg-start: rgba(255, 255, 255, 0.58);
+    --map-page-chart-bg-end: rgba(233, 242, 252, 0.42);
+    --map-page-chart-shadow: rgba(82, 100, 130, 0.16);
+    --map-stat-age-pill-bg-start: rgba(255, 255, 255, 0.9);
+    --map-stat-age-pill-bg-end: rgba(224, 237, 252, 0.88);
+    --map-stat-age-pill-border: rgba(130, 162, 194, 0.22);
+    --map-stat-age-pill-inset: rgba(255, 255, 255, 0.78);
+    --map-stat-age-pill-shadow: rgba(76, 105, 138, 0.16);
+    --map-stat-age-pill-text: #16324a;
+    --map-stat-age-pill-text-shadow: rgba(94, 191, 255, 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,6 +81,28 @@
         --details-summary: #8bc4ff;
         --code-bg: #09111a;
         --code-text: #e6edf5;
+        --map-stat-chart-bg-start: rgba(18, 32, 51, 0.92);
+        --map-stat-chart-bg-end: rgba(15, 23, 36, 0.88);
+        --map-stat-chart-border: rgba(124, 151, 181, 0.24);
+        --map-stat-chart-inset: rgba(255, 255, 255, 0.06);
+        --map-stat-chart-shadow: rgba(0, 0, 0, 0.28);
+        --map-stat-half-chart-bg-start: rgba(18, 32, 51, 0.42);
+        --map-stat-half-chart-bg-end: rgba(15, 23, 36, 0.18);
+        --map-stat-half-chart-border: rgba(173, 210, 245, 0.16);
+        --map-stat-half-chart-inset: rgba(255, 255, 255, 0.08);
+        --map-stat-half-chart-shadow: rgba(0, 0, 0, 0.18);
+        --map-stat-half-chart-overlay-start: rgba(12, 21, 34, 0.12);
+        --map-stat-half-chart-overlay-end: rgba(20, 34, 54, 0.08);
+        --map-page-chart-bg-start: rgba(10, 18, 30, 0.48);
+        --map-page-chart-bg-end: rgba(16, 28, 45, 0.4);
+        --map-page-chart-shadow: rgba(0, 0, 0, 0.28);
+        --map-stat-age-pill-bg-start: rgba(10, 17, 29, 0.82);
+        --map-stat-age-pill-bg-end: rgba(23, 37, 58, 0.64);
+        --map-stat-age-pill-border: rgba(255, 255, 255, 0.06);
+        --map-stat-age-pill-inset: rgba(255, 255, 255, 0.08);
+        --map-stat-age-pill-shadow: rgba(0, 0, 0, 0.2);
+        --map-stat-age-pill-text: rgba(248, 252, 255, 0.96);
+        --map-stat-age-pill-text-shadow: var(--map-stat-half-glow);
     }
 }
 
@@ -265,13 +309,125 @@ h3 {
 }
 
 .map-stats-grid {
+    --map-stats-equal-card-height: 380px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto repeat(2, var(--map-stats-equal-card-height));
     gap: 1rem;
     align-items: stretch;
     width: 100%;
     margin: 0.75rem auto 0;
     box-sizing: border-box;
+    grid-auto-rows: auto;
+}
+
+.map-stat-card-stack {
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    grid-column: 2;
+    align-self: stretch;
+    min-height: var(--map-stats-equal-card-height);
+    height: var(--map-stats-equal-card-height);
+}
+
+.map-stat-card--submitted,
+.map-stat-card--province:not(.map-stat-card--province-half) {
+    min-height: var(--map-stats-equal-card-height);
+    height: var(--map-stats-equal-card-height);
+}
+
+.map-stat-card--province-half {
+    --map-stat-half-accent: rgba(94, 191, 255, 0.34);
+    --map-stat-half-glow: rgba(94, 191, 255, 0.2);
+    min-height: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 85% 18%, var(--map-stat-half-accent) 0, transparent 34%),
+        linear-gradient(180deg, rgba(16, 30, 49, 0.98), rgba(11, 22, 36, 0.96));
+}
+
+.map-stat-card-stack > .map-stat-card:nth-child(2) {
+    --map-stat-half-accent: rgba(255, 191, 93, 0.28);
+    --map-stat-half-glow: rgba(255, 191, 93, 0.18);
+}
+
+.map-stat-card--province-half::after {
+    content: "";
+    position: absolute;
+    right: -2.25rem;
+    bottom: -2.4rem;
+    width: 8.5rem;
+    height: 8.5rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--map-stat-half-glow) 0, transparent 72%);
+    filter: blur(10px);
+    pointer-events: none;
+}
+
+.map-stat-card--province-half > * {
+    position: relative;
+    z-index: 1;
+}
+
+.map-stat-card--province-half .map-stat-card__chart {
+    min-height: 0;
+    padding: 0.9rem 1rem 1rem;
+    border-color: var(--map-stat-half-chart-border);
+    background:
+        linear-gradient(180deg, var(--map-stat-half-chart-bg-start), var(--map-stat-half-chart-bg-end)),
+        linear-gradient(135deg, var(--map-stat-half-chart-overlay-start), var(--map-stat-half-chart-overlay-end));
+    box-shadow:
+        inset 0 1px 0 var(--map-stat-half-chart-inset),
+        0 12px 28px var(--map-stat-half-chart-shadow);
+}
+
+.map-stat-card--province-half .map-stat-card__chart::before {
+    content: "";
+    position: absolute;
+    inset: auto auto -1.2rem -1rem;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--map-stat-half-glow) 0, transparent 72%);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.map-stat-card-stack > .map-stat-card {
+    height: 100%;
+    min-height: 0;
+}
+
+.map-stat-card--province-half .map-stat-card__title {
+    margin-bottom: 0.35rem;
+    font-size: 0.98rem;
+    line-height: 1.3;
+}
+
+.map-stat-card--province-half .map-stat-card__value--age {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-inline: auto;
+    min-height: 4.15rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--map-stat-age-pill-bg-start), var(--map-stat-age-pill-bg-end));
+    border: 1px solid var(--map-stat-age-pill-border);
+    box-shadow:
+        inset 0 1px 0 var(--map-stat-age-pill-inset),
+        0 10px 24px var(--map-stat-age-pill-shadow),
+        0 0 28px var(--map-stat-half-glow);
+    font-size: clamp(1.35rem, 2.7vw, 2rem);
+    line-height: 1.18;
+    text-align: center;
+    letter-spacing: -0.025em;
+    color: var(--map-stat-age-pill-text);
+    text-shadow: 0 0 18px var(--map-stat-age-pill-text-shadow);
 }
 
 .map-stat-card {
@@ -322,7 +478,7 @@ h3 {
 .map-stat-card--submitted .map-stat-card__chart-inner {
     width: 100%;
     max-width: 100%;
-    height: 260px;
+    height: min(100%, 260px);
     aspect-ratio: auto;
 }
 
@@ -333,7 +489,7 @@ h3 {
 .map-stat-card--province .map-stat-card__chart-inner {
     width: 100%;
     max-width: 100%;
-    height: 320px;
+    height: min(100%, 320px);
     aspect-ratio: auto;
 }
 
@@ -405,9 +561,11 @@ h3 {
     padding: 1rem 1.05rem 1.15rem;
     box-sizing: border-box;
     border-radius: 18px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(241, 247, 255, 0.1));
-    border: 1px solid var(--panel-border);
-    box-shadow: var(--shadow-soft);
+    background: linear-gradient(180deg, var(--map-stat-chart-bg-start), var(--map-stat-chart-bg-end));
+    border: 1px solid var(--map-stat-chart-border);
+    box-shadow:
+        inset 0 1px 0 var(--map-stat-chart-inset),
+        0 10px 24px var(--map-stat-chart-shadow);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     display: flex;
@@ -1386,6 +1544,13 @@ hr {
         -webkit-backdrop-filter: blur(16px);
     }
 
+    .map-page .map-stat-card__chart {
+        background: linear-gradient(180deg, var(--map-page-chart-bg-start), var(--map-page-chart-bg-end));
+        box-shadow:
+            inset 0 1px 0 var(--map-stat-chart-inset),
+            0 18px 38px var(--map-page-chart-shadow);
+    }
+
     .map-page .map-stat-card {
         border-color: rgba(138, 168, 201, 0.24);
     }
@@ -1552,6 +1717,8 @@ hr {
 
     .map-stats-grid {
         grid-template-columns: 1fr;
+        grid-template-rows: none;
+        grid-auto-rows: auto;
     }
 
     .map-stat-card--wide,
@@ -1562,6 +1729,12 @@ hr {
     }
 
     .map-stat-card--chart {
+        min-height: 340px;
+    }
+
+    .map-stat-card--submitted,
+    .map-stat-card--province:not(.map-stat-card--province-half) {
+        height: auto;
         min-height: 340px;
     }
 
@@ -1578,8 +1751,69 @@ hr {
         font-size: 1.05rem;
     }
 
+    .map-stat-card__value--badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        max-width: 100%;
+        align-self: flex-start;
+        text-align: center;
+    }
+
     .map-stat-card__chart-inner {
         width: min(100%, 300px);
+    }
+
+    .map-stat-card-stack {
+        grid-template-rows: none;
+        grid-column: 1 / -1;
+        min-height: 0;
+        height: auto;
+    }
+
+    .map-stat-card--province-half,
+    .map-stat-card--province-half.map-stat-card--chart {
+        min-height: auto;
+        height: auto;
+        display: block;
+    }
+
+    .map-stat-card--province-half::after {
+        opacity: 0.72;
+    }
+
+    .map-stat-card--province-half .map-stat-card__chart {
+        min-height: 0;
+        height: auto;
+        margin-top: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        overflow: visible;
+        display: contents;
+    }
+
+    .map-stat-card-stack > .map-stat-card {
+        height: auto;
+    }
+
+    .map-stat-card--province-half .map-stat-card__value--age {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin-inline: auto;
+        min-height: 0;
+        margin-top: 0.25rem;
+        padding: 0.72rem 0.9rem;
+        border-radius: 15px;
+        font-size: clamp(1rem, 4vw, 1.18rem);
+        line-height: 1.3;
+        text-align: center;
     }
 
     .map-stat-card--submitted .map-stat-card__chart-inner {
@@ -1657,9 +1891,13 @@ hr {
     }
 
     .map-stat-card__value--badge {
-        width: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
         max-width: 100%;
         align-self: flex-start;
+        text-align: center;
         padding: 0.6rem 0.82rem;
         font-size: 1rem;
     }
@@ -1876,6 +2114,26 @@ hr {
 
     .map-stat-card__chart-inner {
         width: min(100%, 210px);
+    }
+
+    .map-stat-card--province-half,
+    .map-stat-card--province-half.map-stat-card--chart {
+        min-height: auto;
+        height: auto;
+        display: block;
+    }
+
+    .map-stat-card--province-half .map-stat-card__chart {
+        min-height: 0;
+        height: auto;
+        padding: 0;
+        display: contents;
+    }
+
+    .map-stat-card--province-half .map-stat-card__value--age {
+        padding: 0.62rem 0.8rem;
+        border-radius: 14px;
+        font-size: 1rem;
     }
 
     .map-stat-card--submitted .map-stat-card__chart-inner {
