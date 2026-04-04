@@ -5,7 +5,7 @@ const { getMapData } = require('../services/mapDataService');
 const { translateDetailItems } = require('../services/textTranslationService');
 
 // API 路由只负责把 service 层返回的数据转成 HTTP 响应。
-function createApiRoutes({ googleScriptUrl, publicMapDataUrl }) {
+function createApiRoutes({ googleScriptUrl, publicMapDataUrl, rateLimitRedisUrl }) {
   const router = express.Router();
   const publicMapDataCors = cors({
     origin: '*',
@@ -16,6 +16,8 @@ function createApiRoutes({ googleScriptUrl, publicMapDataUrl }) {
   const refreshRateLimiter = createRateLimiter({
     windowMs: 5 * 60 * 1000,
     max: 3,
+    redisUrl: rateLimitRedisUrl,
+    storePrefix: 'map-refresh-rate-limit:',
     skip(req) {
       return !shouldForceRefresh(req);
     },
@@ -29,6 +31,8 @@ function createApiRoutes({ googleScriptUrl, publicMapDataUrl }) {
   const translateRateLimiter = createRateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 80,
+    redisUrl: rateLimitRedisUrl,
+    storePrefix: 'translate-rate-limit:',
     getMessage(req) {
       return req.t('server.tooManyRequests');
     },

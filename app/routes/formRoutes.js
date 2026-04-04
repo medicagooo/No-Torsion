@@ -6,13 +6,24 @@ const {
   submitToGoogleForm,
   validateSubmission
 } = require('../services/formService');
+const { validateFormProtection } = require('../services/formProtectionService');
 const { logAuditEvent } = require('../services/auditLogService');
 
 // 表單提交流程：限流 -> 校验 -> 干跑预览或真实提交 -> 审计日志。
-function createFormRoutes({ formDryRun, googleFormUrl, submitRateLimitMax, title }) {
+function createFormRoutes({
+  formDryRun,
+  formProtectionMaxAgeMs,
+  formProtectionMinFillMs,
+  formProtectionSecret,
+  googleFormUrl,
+  rateLimitRedisUrl,
+  submitRateLimitMax,
+  title
+}) {
   const router = express.Router();
   const submitLimiter = createSubmitRateLimiter({
     max: submitRateLimitMax,
+    redisUrl: rateLimitRedisUrl,
     getMessage(req) {
       return req.t('server.tooManyRequests');
     },
@@ -24,6 +35,23 @@ function createFormRoutes({ formDryRun, googleFormUrl, submitRateLimitMax, title
   router.post('/submit', submitLimiter, async (req, res) => {
     // 每次进入提交路由都先记录一条审计日志，便于后续排查来源 IP 和路径。
     logAuditEvent(req, 'submit_received', { dryRun: formDryRun });
+
+    const protectionResult = validateFormProtection({
+      token: req.body.form_token,
+      honeypotValue: req.body.website,
+      secret: formProtectionSecret,
+      minFillMs: formProtectionMinFillMs,
+      maxAgeMs: formProtectionMaxAgeMs
+    });
+
+    if (!protectionResult.ok) {
+      logAuditEvent(req, 'submit_protection_failed', {
+        ageMs: protectionResult.ageMs,
+        reason: protectionResult.reason,
+        status: 400
+      });
+      return res.status(400).send(req.t('server.invalidFormSubmission'));
+    }
 
     try {
       // 先把请求体校验并规范化成 Google Form 需要的值。

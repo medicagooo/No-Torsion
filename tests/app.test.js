@@ -136,12 +136,80 @@ function installTranslationFetchStub(prefix = 'EN:') {
   };
 }
 
+function createFakeNode(tagName, textContent = '') {
+  return {
+    tagName,
+    textContent,
+    children: [],
+    disabled: false,
+    type: '',
+    className: '',
+    listeners: new Map(),
+    appendChild(child) {
+      this.children.push(child);
+      return child;
+    },
+    replaceChildren(...children) {
+      this.children = [...children];
+    },
+    addEventListener(eventName, listener) {
+      this.listeners.set(eventName, listener);
+    }
+  };
+}
+
+function createFakeDocument() {
+  return {
+    createElement(tagName) {
+      return createFakeNode(tagName);
+    },
+    createTextNode(textContent) {
+      return createFakeNode('#text', textContent);
+    }
+  };
+}
+
+function collectNodeText(node) {
+  return [node.textContent, ...node.children.map((child) => collectNodeText(child))].join('');
+}
+
+function buildValidSubmissionBody(overrides = {}) {
+  const basePayload = {
+    identity: '受害者本人',
+    age: '18',
+    sex: '男',
+    sex_other: '',
+    provinceCode: '110000',
+    cityCode: '110101',
+    countyCode: '',
+    school_name: '测试学校',
+    school_address: '北京市东城区测试路 1 号',
+    date_start: '2024-01-01',
+    date_end: '',
+    experience: '',
+    headmaster_name: '',
+    contact_information: 'test@example.com',
+    scandal: '',
+    other: '',
+    website: '',
+    form_token: ''
+  };
+
+  return new URLSearchParams({
+    ...basePayload,
+    ...overrides
+  }).toString();
+}
+
 test('root page renders successfully', async () => {
   const app = loadApp({ DEBUG_MOD: 'false' });
   const response = await requestPath(app, '/');
 
   assert.equal(response.statusCode, 200);
   assert.match(response.body, /NO CONVERSION THERAPY/i);
+  assert.match(response.body, /window\.API_URL = "/);
+  assert.match(response.body, /\/js\/map_data_store\.js/);
+  assert.match(response.body, /\/js\/map_preload\.js/);
 });
 
 test('map page renders the record container and lazy-load sentinel', async () => {
@@ -151,6 +219,22 @@ test('map page renders the record container and lazy-load sentinel', async () =>
   assert.equal(response.statusCode, 200);
   assert.match(response.body, /id="data-container"/);
   assert.match(response.body, /id="data-container-sentinel"/);
+  assert.match(response.body, /\/js\/map_record_stats\.js/);
+});
+
+test('form page includes school name and address autocomplete hooks', async () => {
+  const app = loadApp({ DEBUG_MOD: 'false' });
+  const response = await requestPath(app, '/form');
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.body, /机构所在省份/);
+  assert.match(response.body, /机构所在城市 \/ 区县/);
+  assert.match(response.body, /机构所在县区（可选）/);
+  assert.match(response.body, /id="school_results_list"/);
+  assert.match(response.body, /id="address_results_list"/);
+  assert.match(response.body, /name="website"/);
+  assert.match(response.body, /name="form_token"/);
+  assert.match(response.body, /\/js\/map_data_store\.js/);
 });
 
 test('sitemap.xml lists static pages and blog articles', async () => {
@@ -375,6 +459,251 @@ test('map data service preserves valid upstream sync timestamps', () => {
   assert.equal(resolveLastSyncedTimestamp('1774925078387', 123), 1774925078387);
   assert.equal(resolveLastSyncedTimestamp(undefined, 123), 123);
   assert.equal(resolveLastSyncedTimestamp('-1', 123), 123);
+});
+
+test('map timer renders elapsed seconds and adds refresh control after the refresh interval', () => {
+  clearProjectModules();
+  const { getElapsedSeconds, renderLastSyncedValue } = require(path.join(projectRoot, 'public/js/map_time_utils'));
+  const documentRef = createFakeDocument();
+  const lastSyncedElement = createFakeNode('span');
+  let refreshTriggered = false;
+
+  renderLastSyncedValue(lastSyncedElement, {
+    elapsedSeconds: getElapsedSeconds(1000, 43000),
+    refreshInProgress: false,
+    onRefresh() {
+      refreshTriggered = true;
+    },
+    i18n: {
+      common: {
+        loading: '加载中...'
+      },
+      map: {
+        stats: {
+          secondsAgo: '{seconds} 秒前',
+          refresh: '刷新'
+        }
+      }
+    },
+    refreshIntervalSeconds: 300,
+    documentRef
+  });
+
+  assert.equal(collectNodeText(lastSyncedElement), '42 秒前');
+  assert.equal(lastSyncedElement.children.length, 1);
+
+  renderLastSyncedValue(lastSyncedElement, {
+    elapsedSeconds: getElapsedSeconds(1000, 306000),
+    refreshInProgress: false,
+    onRefresh() {
+      refreshTriggered = true;
+    },
+    i18n: {
+      common: {
+        loading: '加载中...'
+      },
+      map: {
+        stats: {
+          secondsAgo: '{seconds} 秒前',
+          refresh: '刷新'
+        }
+      }
+    },
+    refreshIntervalSeconds: 300,
+    documentRef
+  });
+
+  assert.equal(collectNodeText(lastSyncedElement), '305 秒前, 刷新');
+  assert.equal(lastSyncedElement.children.length, 3);
+
+  const refreshButton = lastSyncedElement.children[2];
+  assert.equal(refreshButton.tagName, 'button');
+  assert.equal(refreshButton.disabled, false);
+
+  refreshButton.listeners.get('click')();
+  assert.equal(refreshTriggered, true);
+});
+
+test('map record stats count self and agent reports per school', () => {
+  clearProjectModules();
+  const {
+    buildSchoolReportStats,
+    getSchoolReportStats,
+    groupSchoolRecords
+  } = require(path.join(projectRoot, 'public/js/map_record_stats'));
+
+  const statsBySchool = buildSchoolReportStats([
+    { name: '启明学校', province: '山东', addr: '地址 A', inputType: '受害者本人' },
+    { name: '启明学校', province: '山东', addr: '地址 B', inputType: '受害者本人' },
+    { name: '启明学校', province: '山东', addr: '地址 A', inputType: '受害者的代理人' },
+    { name: '晨光学校', province: '北京', addr: '地址 C', inputType: '受害者的代理人' },
+    { name: '晨光学校', province: '北京', addr: '地址 C', inputType: '' }
+  ]);
+
+  assert.deepEqual(
+    getSchoolReportStats(statsBySchool, { name: '启明学校', province: '山东', addr: '其他地址' }),
+    { selfCount: 2, agentCount: 1 }
+  );
+  assert.deepEqual(
+    getSchoolReportStats(statsBySchool, { name: '晨光学校', province: '北京', addr: '地址 C' }),
+    { selfCount: 0, agentCount: 1 }
+  );
+
+  const groupedRecords = groupSchoolRecords([
+    { name: '启明学校', province: '山东', addr: '地址 A', experience: '经历 1', scandal: '', else: '', HMaster: '甲', prov: '青岛', contact: '1' },
+    { name: '启明学校', province: '山东', addr: '地址 A', experience: '经历 1', scandal: '', else: '', HMaster: '甲', prov: '青岛', contact: '1' },
+    { name: '启明学校', province: '山东', addr: '地址 A', experience: '经历 2', scandal: '', else: '', HMaster: '甲', prov: '青岛', contact: '1' }
+  ]);
+
+  assert.equal(groupedRecords.length, 1);
+  assert.equal(groupedRecords[0].pages.length, 2);
+});
+
+test('form protection tokens reject honeypot, tampering, and overly fast submissions', () => {
+  clearProjectModules();
+  const {
+    issueFormProtectionToken,
+    validateFormProtection
+  } = require(path.join(projectRoot, 'app/services/formProtectionService'));
+  const issuedAt = 1_700_000_000_000;
+  const token = issueFormProtectionToken({
+    secret: 'test-form-protection-secret',
+    issuedAt
+  });
+
+  assert.equal(validateFormProtection({
+    token,
+    secret: 'test-form-protection-secret',
+    now: issuedAt + 3500,
+    minFillMs: 3000,
+    maxAgeMs: 10000
+  }).ok, true);
+
+  assert.equal(validateFormProtection({
+    token,
+    honeypotValue: 'https://spam.example',
+    secret: 'test-form-protection-secret',
+    now: issuedAt + 3500
+  }).reason, 'honeypot_filled');
+
+  assert.equal(validateFormProtection({
+    token,
+    secret: 'test-form-protection-secret',
+    now: issuedAt + 1500,
+    minFillMs: 3000
+  }).reason, 'submitted_too_quickly');
+
+  assert.equal(validateFormProtection({
+    token: `${token.slice(0, -1)}${token.endsWith('0') ? '1' : '0'}`,
+    secret: 'test-form-protection-secret',
+    now: issuedAt + 3500
+  }).reason, 'invalid_token');
+});
+
+test('form autocomplete records are deduplicated and searchable by both school name and address', () => {
+  clearProjectModules();
+  const { buildAutocompleteRecords, getAutocompleteSuggestions } = require(path.join(projectRoot, 'public/js/form_api'));
+
+  const records = buildAutocompleteRecords([
+    { name: '青岛启明学校', addr: '山东省青岛市市南区香港中路 1 号' },
+    { name: '青岛启明学校', addr: '山东省青岛市市南区香港中路 1 号' },
+    { name: '济南晨光学校', addr: '山东省济南市历下区泉城路 8 号' }
+  ]);
+
+  assert.equal(records.length, 2);
+  assert.deepEqual(
+    getAutocompleteSuggestions(records, '启明', 'name').map((record) => record.name),
+    ['青岛启明学校']
+  );
+  assert.deepEqual(
+    getAutocompleteSuggestions(records, '泉城路', 'address').map((record) => record.addr),
+    ['山东省济南市历下区泉城路 8 号']
+  );
+});
+
+test('submit route rejects honeypot submissions with a generic protection error', async () => {
+  clearProjectModules();
+  const { issueFormProtectionToken } = require(path.join(projectRoot, 'app/services/formProtectionService'));
+  const app = loadApp({
+    DEBUG_MOD: 'false',
+    FORM_DRY_RUN: 'true',
+    FORM_PROTECTION_SECRET: 'test-form-protection-secret'
+  });
+  const response = await requestApp(app, {
+    path: '/submit',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: buildValidSubmissionBody({
+      website: 'https://spam.example',
+      form_token: issueFormProtectionToken({
+        secret: 'test-form-protection-secret',
+        issuedAt: Date.now() - 5000
+      })
+    })
+  });
+
+  assert.equal(response.statusCode, 400);
+  assert.match(response.body, /提交已失效或异常/);
+  clearProjectModules();
+});
+
+test('submit route rejects submissions that arrive too quickly', async () => {
+  clearProjectModules();
+  const { issueFormProtectionToken } = require(path.join(projectRoot, 'app/services/formProtectionService'));
+  const app = loadApp({
+    DEBUG_MOD: 'false',
+    FORM_DRY_RUN: 'true',
+    FORM_PROTECTION_SECRET: 'test-form-protection-secret',
+    FORM_PROTECTION_MIN_FILL_MS: '3000'
+  });
+  const response = await requestApp(app, {
+    path: '/submit',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: buildValidSubmissionBody({
+      form_token: issueFormProtectionToken({
+        secret: 'test-form-protection-secret',
+        issuedAt: Date.now() - 500
+      })
+    })
+  });
+
+  assert.equal(response.statusCode, 400);
+  assert.match(response.body, /提交已失效或异常/);
+  clearProjectModules();
+});
+
+test('submit route still accepts a valid protected form in dry run mode', async () => {
+  clearProjectModules();
+  const { issueFormProtectionToken } = require(path.join(projectRoot, 'app/services/formProtectionService'));
+  const app = loadApp({
+    DEBUG_MOD: 'false',
+    FORM_DRY_RUN: 'true',
+    FORM_PROTECTION_SECRET: 'test-form-protection-secret',
+    FORM_PROTECTION_MIN_FILL_MS: '3000'
+  });
+  const response = await requestApp(app, {
+    path: '/submit',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: buildValidSubmissionBody({
+      form_token: issueFormProtectionToken({
+        secret: 'test-form-protection-secret',
+        issuedAt: Date.now() - 5000
+      })
+    })
+  });
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.body, /entry\.5034928/);
+  assert.match(response.body, /测试学校/);
+  clearProjectModules();
 });
 
 test('map data service can bypass in-memory cache on force refresh', async () => {

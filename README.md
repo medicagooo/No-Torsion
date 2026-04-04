@@ -64,6 +64,18 @@ PORT="3000"
 # 表單提交限流，15 分鐘內最多提交次數
 SUBMIT_RATE_LIMIT_MAX="5"
 
+# 表單防刷 token 的簽名密鑰；正式環境強烈建議設置一個長隨機字串
+# 用途：/form 下發的 form_token 會用它簽名，/submit 會用它驗證 token 是否被篡改
+# 要求：所有應用實例必須使用同一個值，建議使用至少 32 位隨機字串
+# 示例：openssl rand -hex 32
+FORM_PROTECTION_SECRET=""
+
+# 表單最短填寫時間（毫秒），過快提交會被視為異常
+FORM_PROTECTION_MIN_FILL_MS="3000"
+
+# 表單 token 最長有效時間（毫秒），超過後需刷新表單重新取得
+FORM_PROTECTION_MAX_AGE_MS="86400000"
+
 # Google Form 的表單 ID；不填則使用專案內建預設值
 FORM_ID="1FAIpQLScggjQgYutXQrjQDrutyxL0eLaFMktTMRKsFWPffQGavUFspA"
 
@@ -77,14 +89,32 @@ PUBLIC_MAP_DATA_URL="https://nct.hosinoneko.me/api/map-data"
 # 若部署在 Nginx / Caddy / Vercel 等反向代理後，可設為 1 或 true
 # 讓限流與審計正確識別用戶真實 IP。Vercel 會自動開啓。
 TRUST_PROXY="false"
+
+# 若部署為多實例，建議配置共享 Redis，讓限流能跨實例生效
+# 也可直接使用 REDIS_URL
+# 用途：讓 /submit 與其他限流接口共用同一份計數，避免多實例時每台各算各的
+# 留空行為：自動退回單實例進程內記憶體限流；應用重啓後計數會清空，多實例之間不共享
+# 常見格式：
+#   本地 Redis: redis://127.0.0.1:6379
+#   帶密碼 Redis: redis://default:password@host:6379
+#   TLS Redis: rediss://default:password@host:6379
+RATE_LIMIT_REDIS_URL=""
 ```
 
 常見配置建議：
 
 - 本地開發：保留 `DEBUG_MOD="true"` 與 `FORM_DRY_RUN="true"`。
 - 正式部署：將 `DEBUG_MOD="false"`、`FORM_DRY_RUN="false"`，並把 `SITE_URL` 改成你的正式網域。
+- 正式部署時強烈建議一併設置 `FORM_PROTECTION_SECRET`；否則表單防刷 token 只能退回使用派生值。
 - 若你有自己的 Google Apps Script 資料源，請填入 `GOOGLE_SCRIPT_URL`；否則網站會退回使用 `PUBLIC_MAP_DATA_URL`。
 - 如果你把站點放在反向代理後面，自行部署時建議一併設置 `TRUST_PROXY="1"`。
+- 若你的站點會跑多個實例，建議配置 `RATE_LIMIT_REDIS_URL` 或 `REDIS_URL`，避免每個實例各算各的限流額度。
+- 若 `RATE_LIMIT_REDIS_URL` / `REDIS_URL` 留空，程式會回退到單實例記憶體限流；單機部署可接受，但應用重啓後會清空計數，且多實例之間不共享。
+
+補充說明：
+
+- `FORM_PROTECTION_SECRET` 是服務端簽名密鑰，不是前端公開配置。請只放在伺服器環境變數中，不要寫進客戶端腳本或提交到版本庫。
+- `RATE_LIMIT_REDIS_URL` 與 `REDIS_URL` 二選一即可；程式會優先讀 `RATE_LIMIT_REDIS_URL`，沒有時再退回 `REDIS_URL`。
 
 *一般來説 `TITLE` 填 `NO CONVERSION THERAPY` 就可以了。*
 

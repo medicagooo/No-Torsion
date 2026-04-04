@@ -4,9 +4,13 @@ const {
   apiUrl,
   debugMod,
   formDryRun,
+  formProtectionMaxAgeMs,
+  formProtectionMinFillMs,
+  formProtectionSecret,
   googleFormUrl,
   googleScriptUrl,
   publicMapDataUrl,
+  rateLimitRedisUrl,
   siteUrl,
   submitRateLimitMax,
   title,
@@ -40,18 +44,24 @@ app.use(express.json({ limit: requestBodyLimits.json }));
 app.use(createPageRoutes({
   apiUrl,
   debugMod,
+  formProtectionSecret,
   siteUrl,
   title
 }));
 app.use(createFormRoutes({
   formDryRun,
+  formProtectionMaxAgeMs,
+  formProtectionMinFillMs,
+  formProtectionSecret,
   googleFormUrl,
+  rateLimitRedisUrl,
   submitRateLimitMax,
   title
 }));
 app.use(createApiRoutes({
   googleScriptUrl,
-  publicMapDataUrl
+  publicMapDataUrl,
+  rateLimitRedisUrl
 }));
 
 module.exports = app;
